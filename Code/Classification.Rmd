@@ -1,0 +1,772 @@
+---
+title: "Classification Algorithms"
+author: "Ajith Vernekar"
+date: "2023-03-31"
+output:
+  html_document:
+    self_contained: false
+    keep_md: false
+    fig_path: "../Output/Plots/Classification/"
+    toc: true
+    theme: united
+    highlight: tango  
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+    number_sections: true
+    output_dir: "../Output/Html_Reports/"
+---
+
+This project demonstrates on the classification model using Decision Trees and kNN in R. I have used bank dataset. This dataset contains information about a bank's marketing campaigns, and is commonly used for binary classification tasks to predict whether a customer will subscribe to a term deposit.
+
+# Data
+
+The Bank Marketing dataset is available from the UCI Machine Learning Repository, which is a public repository for machine learning datasets. You can access the dataset and its information from the following link:
+
+<https://archive.ics.uci.edu/ml/datasets/Bank+Marketing>
+
+The dataset contains information about a bank's telemarketing campaigns and whether or not the client subscribed to a term deposit. There are a total of 16 input variables and one binary output variable (0/1) indicating whether or not the client subscribed to the term deposit. The dataset has 45,211 records, and is commonly used for binary classification tasks in machine learning.
+
+**Attribute information:**
+
+*Input variables:*
+
+1.  age (numeric)
+
+2.  job : type of job (categorical: "admin.","unknown","unemployed","management","housemaid","entrepreneur","student", "blue-collar","self-employed","retired","technician","services")
+
+3.  marital : marital status (categorical: "married","divorced","single"; note: "divorced" means divorced or widowed)
+
+4.  education (categorical: "unknown","secondary","primary","tertiary")
+
+5.  default: has credit in default? (binary: "yes","no")
+
+6.  balance: average yearly balance, in euros (numeric)
+
+7.  housing: has housing loan? (binary: "yes","no")
+
+8.  loan: has personal loan? (binary: "yes","no") \# related with the last contact of the current campaign:
+
+9.  contact: contact communication type (categorical: "unknown","telephone","cellular")
+
+10. day: last contact day of the month (numeric)
+
+11. month: last contact month of year (categorical: "jan", "feb", "mar", ..., "nov", "dec")
+
+12. duration: last contact duration, in seconds (numeric) \# other attributes:
+
+13. campaign: number of contacts performed during this campaign and for this client (numeric, includes last contact)
+
+14. pdays: number of days that passed by after the client was last contacted from a previous campaign (numeric, -1 means client was not previously contacted)
+
+15. previous: number of contacts performed before this campaign and for this client (numeric)
+
+16. poutcome: outcome of the previous marketing campaign (categorical: "unknown","other","failure","success")
+
+    *Output variable (desired target):*
+
+17. y - has the client subscribed a term deposit? (binary: "yes","no")
+
+# Exploratory Data Analysis
+
+Before applying machine learning algorithms to classify the data, it is important to perform some initial exploratory data analysis (EDA) to get a sense of the data and identify any potential issues or patterns. Here are some steps you could take for analyzing the Bank Marketing dataset:
+
+```{r, include=FALSE}
+# Installing and loading required libraries
+
+# Set a new CRAN mirror URL
+options(repos = c(CRAN = "http://cran.r-project.org"))
+
+# Vector of package names to install and load
+packages <- c("tidyverse", "ggplot2", "dplyr", "rpart", "caret", "class", "KernSmooth",
+              "ROSE", "rpart.plot")
+
+# Install all required packages
+install.packages(packages)
+
+# Load all required libraries
+lapply(packages, library, character.only = TRUE)
+```
+
+```{r}
+# Loading Bank Marketing dataset
+bank_df <- read.csv("../Data/Classification/bank-full.csv", header = TRUE, sep = ";")
+# Make a copy of the dataframefor EDA
+bank <- bank_df
+# view data set
+head(bank, n=5)
+```
+
+```{r}
+# Dimension of the dataset
+dim(bank)
+```
+
+The above output infers that there are a total of 17 input variables and one binary output variable (0/1) indicating whether or not the client subscribed to the term deposit and The dataset has 45,211 records
+
+```{r}
+# Inspecting the datatypes of the variables
+str(bank)
+```
+
+In R, converting categorical variables to factors is very important because it enables R to recognize the variable as a categorical variable, rather than a numerical variable. This is important because categorical variables have unique properties that require special treatment when performing statistical analyses or machine learning algorithms.
+
+The below chunk is used to find the unique values of the categorical variables in a dataframe. We used sapply to identify the categorical variables in the dataframe, by checking if each column is a factor. We then used lapply to apply the unique function to only the categorical variables (i.e., the columns identified as factors by sapply)
+
+```{r}
+# Convert categorical variables to factors
+bank$job <- as.factor(bank$job)
+bank$marital <- as.factor(bank$marital)
+bank$education <- as.factor(bank$education)
+bank$default <- as.factor(bank$default)
+bank$housing <- as.factor(bank$housing)
+bank$loan <- as.factor(bank$loan)
+bank$contact <- as.factor(bank$contact)
+bank$month <- as.factor(bank$month)
+bank$poutcome <- as.factor(bank$poutcome)
+bank$y <- as.factor(bank$y)
+
+# Find the categorical variables
+cat_vars <- sapply(bank, is.factor)
+
+# Find the unique values of each categorical variable
+unique_vals <- lapply(bank[, cat_vars], unique)
+print(unique_vals)
+```
+
+```{r categorical_var_frequency}
+# Create a list of categorical variables
+cat_vars <- c("job", "marital", "education", "default", "housing", "loan", "contact", "month", "poutcome")
+
+# Create a function to plot bar charts for categorical variables
+plot_cat_var <- function(data, var_name) {
+  
+  # Calculate frequency table
+  freq_table <- table(data[, var_name], data$y)
+  freq_table <- as.data.frame(freq_table)
+  colnames(freq_table) <- c(var_name, "y", "freq")
+  
+  # Calculate percentage
+  freq_table$percentage <- (freq_table$freq/sum(freq_table$freq))*100
+  
+  # Plot bar chart
+  ggplot(freq_table, aes(x = reorder(factor(get(var_name)), -freq), y = percentage, fill = y)) + 
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_manual(values = c("#FF9999", "#66CC66")) +
+    labs(title = paste("Distribution of", var_name), x = var_name, y = "Percentage")
+}
+
+# Plot bar charts for all categorical variables
+plot_cat_var(bank, "job")
+plot_cat_var(bank, "marital")
+plot_cat_var(bank, "education")
+plot_cat_var(bank, "default")
+plot_cat_var(bank, "housing")
+plot_cat_var(bank, "loan")
+plot_cat_var(bank, "contact")
+plot_cat_var(bank, "month")
+plot_cat_var(bank, "poutcome")
+```
+
+From the above distribution graphs, we can initially say that the customers with no previous loans or housing loans are more probable to subscribe for term deposits.
+
+Here we are the few other observations made.
+
+**Job**: Maximum number of clients work in Blue-color job.
+
+**Maritial**: Maximum number of clients are married. Minimum number of clients are divorced.
+
+**Education**: Maximum number of clients have completed Secondary education.
+
+**Default**: Almost all clients in the dataset have no credit default.
+
+**Loan**: Maximum number of clients do not have a personal loan.
+
+**Month**: Most number of contacts were carried out in the month of May. Lest number of contacts were carried out in the month of December.
+
+**Poutcome**: For maximum number of clients outcome of previous marketing campaign is unknown. Number of failures are higher when compared to success in the results of previous marketing campaign.
+
+Similarly, to check the distribution of numerical variables is an important part of the EDA. One can use summary statistics (e.g., mean, median, standard deviation) and visualizations (e.g., histograms, box plots) to check the distribution of the numerical variables in the dataset.
+
+```{r}
+# Display summary statistics for numeric variables
+summary(bank[,c("age", "balance", "day", "duration", "campaign", "pdays", "previous")])
+```
+
+From the above statistical summary, we can infer that, the minimum age is 18 years, and 50% of the customers are below 39 years of age and the maximum age is 95 years. Lets see the distribution of it using box plot.
+
+```{r boxplot_age}
+# Check for the outliers in the numerical variables in the dataset
+# Create a box plot of age with outliers
+ggplot(data = bank, aes(x = "", y = age)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(aes(color = "age"), width = 0.2) +
+  labs(x = "", y = "Value") +
+  ggtitle("Box plot of age with outliers") +
+  theme_bw()
+```
+
+To show outliers in the plot, we first created a box plot of the "age" column using geom_boxplot and set outlier.shape = NA to hide the outlier points. We then added the outlier points to the plot using geom_jitter, with color = "age" to differentiate them from the "balance" outliers. We repeated this process for the "balance" column.
+
+To add a legend to the plot, we used scale_color_manual to set the colors of the two categories ("age" and "balance"), and added a title and axis labels using labs and ggtitle. Finally, we used theme_bw to set a clean, black-and-white theme for the plot.
+
+```{r distribution_age}
+# Visualizing the distribution of the numerical variables in the dataset
+# Display the distribution of age
+ggplot(bank, aes(x = age)) +
+  geom_histogram(binwidth = 5, color = "white", fill = "blue") +
+  ggtitle("Distribution of Age") +
+  xlab("Age") +
+  ylab("Count")
+```
+
+```{r boxplot_balance}
+# Create a box plot of balance with outliers
+ggplot(data = bank, aes(x = "", y = balance)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(aes(color = "balance"), width = 0.2) +
+  labs(x = "", y = "Value") +
+  scale_color_manual(values = c("red", "blue")) +
+  ggtitle("Box plot of balance with outliers") +
+  theme_bw()
+```
+
+The below chunk of code is used to show the distribution of balance in bins.
+
+```{r distribution_balance}
+# Create bins for different balance levels
+bins <- c(-Inf, 0, 200, 1300, Inf)
+labels <- c("Negative balance", "Low balance", "Middle balance", "High balance")
+
+# Group the balance values into the bins and add labels
+bank_group <- bank
+bank_group$balance_group <- cut(bank$balance, breaks = bins, labels = labels)
+
+# Create a bar graph of balance by balance_group
+ggplot(bank_group, aes(x = balance_group)) + 
+  geom_bar() + 
+  ggtitle("Distribution of Balance") +
+  xlab("Balance Group") +
+  ylab("Count")
+```
+
+From the above summary statistics of balance data, its distribution of bins and box plot, we can infer that the balance variable has outliers. The negative balance here is assumed to be allowed for term deposits and hence not removed. More than 7000 customers hold negative balance and more than 12000 customers hold high balance greater than 1500 euros, and rest hold average balance between 500 t0 1500 euros.
+
+Lets see the distribution of all other numeric variables.
+
+```{r}
+# select numeric columns
+bank_numeric <- bank %>% 
+  select_if(is.numeric)
+
+# gather data into long format for plotting
+bank_gathered <- bank_numeric %>% 
+  gather()
+
+# plot the distribution of numeric variables
+ggplot(bank_gathered, aes(x=value)) + 
+  geom_histogram(bins=30) +
+  facet_wrap(~key, scales="free")
+```
+
+```{r}
+# Check for missing values
+sum(is.na(bank))
+```
+
+Fortunately, there are no missing values. If there were missing values we will have to fill them with the median, mean or mode. I tend to use the median but in this scenario there is no need to fill any missing values. This will definitely make our job easier!
+
+The distribution of the target variable (often called the response variable or dependent variable in statistics) provides insight into the balance or imbalance of the classes in the dataset. In classification problems, the target variable is the variable that we want to predict based on the other features in the dataset.
+
+In the case of the Bank Marketing dataset, the target variable is y, which indicates whether the client subscribed to a term deposit or not. A below chunk of code of bar chart is used to visualize the distribution of this variable
+
+```{r target_class_imbalance}
+# Check for class imbalance
+ggplot(bank, aes(x = y, fill = y)) +
+  geom_bar() +
+  ggtitle("Distribution of Target Variable") +
+  xlab("Target Variable") +
+  ylab("Count")
+```
+
+If the classes are well-balanced, there should be roughly an equal number of observations in each class. In the Bank Marketing dataset, we can see that the "no" class (indicating that the client did not subscribe to a term deposit) is much more frequent than the "yes" class (indicating that the client did subscribe). This is evident in the bar chart of the target variable.
+
+Understanding the distribution of the target variable can help guide the development of machine learning models. In particular, it can help determine the appropriate evaluation metrics to use (e.g. accuracy, precision, recall, F1-score) and the techniques that can be used to handle class imbalance (e.g. resampling methods, cost-sensitive learning, ensemble methods).
+
+# Classification example using Decision Tree
+
+Here is an example of how to implement a decision tree algorithm for classification using the caret package in R.
+
+## Decision Tree - Model 1 (Using Unmodified dataset)
+
+### Splitting data into Training and Testing sets
+
+In this example, we first load the caret package and the Bank Marketing dataset. We then convert the categorical variables to factors using the factor function.
+
+Next, we split the data into training and testing sets using the createDataPartition function from caret. We set the seed to ensure reproducibility.
+
+```{r}
+# Split the data into training and testing sets
+set.seed(123)
+trainIndex <- createDataPartition(bank$y, p = 0.7, list = FALSE)
+training <- bank[trainIndex, ]
+testing <- bank[-trainIndex, ]
+```
+
+### Model Training
+
+Next, we define the training control using the trainControl function from the caret package. We specify that we want to use 10-fold cross-validation (method = "cv") and that we want to optimize the area under the receiver operating characteristic curve (metric = "ROC"). We also specify the twoClassSummary function as the summary function to use, which calculates the sensitivity, specificity, and area under the curve.
+
+We then define the decision tree model using the train function from the caret package. We specify the formula y \~ . to indicate that we want to predict the target variable y using all of the other variables in the dataset. We also specify the method as "rpart" to indicate that we want to use a decision tree algorithm. Finally, we set the trControl parameter to the training control we defined earlier and set the tuneLength parameter to 10 to control the complexity of the tree.
+
+```{r}
+# Define the training control
+ctrl <- trainControl(
+  method = "cv",
+  number = 10,
+  summaryFunction = twoClassSummary,
+  classProbs = TRUE,
+  verboseIter = TRUE
+)
+
+# Define the decision tree model using caret
+model_tree <- train(
+  y ~ .,
+  data = training,
+  method = "rpart",
+  trControl = ctrl,
+  tuneLength = 10,
+  metric = "ROC"
+)
+```
+
+After training the model, we plot the decision tree using the plot function. This produces a graphical representation of the tree that can help us interpret the model.
+
+```{r model_tree}
+# Plot model accuracy vs different values of cp (complexity parameter)
+plot(model_tree)
+```
+
+```{r}
+# Print the best tuning parameter cp that maximizes the model accuracy
+model_tree$bestTune
+```
+
+After finding the model_tree\$bestTune attribute, we use this tuning parameter to build your final decision tree model and then evaluate its performance on a separate test dataset. below code snippet shows to build the final decision tree model using the best tuning parameter:
+
+```{r}
+# Build final decision tree model using the best tuning parameter
+final_model_tree <- rpart(y ~ ., data = training, method = "class", 
+                          control = rpart.control(cp = model_tree$bestTune$cp))
+```
+
+After training the model, we plot the decision tree using the rpart.plot function. This produces a graphical representation of the tree that can help us interpret the model.
+
+```{r model_tree_finalModel}
+# Plot the final tree model
+rpart.plot(final_model_tree)
+```
+
+### Model Prediction
+
+We then make predictions on the testing set using the predict function. We specify type = "class" to indicate that we want to predict the class labels rather than the probabilities.
+
+```{r}
+# Make predictions on the testing set
+predictions <- predict(final_model_tree, newdata = testing, type = "class")
+```
+
+### Model Evaluation
+
+Finally, we evaluate the model by calculating a confusion matrix using the table function. This shows us how many observations were correctly classified and misclassified by the model.
+
+```{r}
+# Evaluate the model
+conf_matrix <- confusionMatrix(predictions, testing$y)
+
+# Print the confusion matrix and the overall accuracy
+print(conf_matrix)
+cat("Overall Accuracy:", round(conf_matrix$overall[1], 3), "\n")
+```
+
+```{r}
+# Calculate precision, recall, and F1 score
+precision <- conf_matrix$byClass[1]
+recall <- conf_matrix$byClass[2]
+f1_score <- conf_matrix$byClass[3]
+cat("Precision:", round(precision, 3), "\n")
+cat("Recall:", round(recall, 3), "\n")
+cat("F1 Score:", round(f1_score, 3), "\n")
+```
+
+## Decision tree - Model 2 (Using SMOTE)
+
+### Balance the target class by Oversampling
+
+As our predictor variable is imbalanced, meaning that one class has significantly fewer observations than the other, then it can be challenging to train a classifier that performs well on both classes.
+
+One approach to address this issue is to balance the data by oversampling the minority class or undersampling the majority class. There are several techniques available to achieve this, such as:
+
+1.  Random oversampling: randomly duplicate observations from the minority class to increase its size.
+
+2.  SMOTE (Synthetic Minority Over-sampling Technique): creates synthetic observations in the minority class by interpolating between existing observations.
+
+3.  Random undersampling: randomly remove observations from the majority class to decrease its size.
+
+In R, one can use the caret package to implement these techniques. Below chunk of code shows how to use the SMOTE algorithm to oversample the minority class:
+
+```{r}
+# Load the necessary libraries
+library(ROSE)
+
+# Apply ROSE to balance the data
+bank_balanced <- ovun.sample(y ~ ., data = bank, method = "over", N = 48000)$data
+dim(bank_balanced)
+```
+
+### Splitting data into Training and Testing sets
+
+```{r}
+# Split the data into training and testing sets
+set.seed(123)
+trainIndex <- createDataPartition(bank_balanced$y, p = 0.7, list = FALSE)
+training <- bank_balanced[trainIndex, ]
+testing <- bank_balanced[-trainIndex, ]
+```
+
+### Model Training
+
+```{r}
+# Define the training control
+ctrl <- trainControl(
+  method = "cv",
+  number = 10,
+  summaryFunction = twoClassSummary,
+  classProbs = TRUE,
+  verboseIter = TRUE
+)
+
+# Define the decision tree model using caret
+model_tree_balanced <- train(
+  y ~ .,
+  data = training,
+  method = "rpart",
+  trControl = ctrl,
+  tuneLength = 10,
+  metric = "ROC"
+)
+```
+
+In the above chunk of code, we use the ovun.sample function from the ROSE package to oversample the minority class. We specify the formula y \~ . to indicate that we want to balance the data based on the target variable y using all of the other variables in the dataset. We set the method parameter to "over" to indicate that we want to use random oversampling to balance the data, and we set the N parameter to 13900, which is the desired number of observations in the minority class after oversampling (this number is equal to the number of observations in the majority class in the original dataset).
+
+```{r model_tree_balanced}
+# Plot the final tree model
+plot(model_tree_balanced)
+```
+
+We then define the training control and the decision tree model as before, but this time we use the bank_balanced dataset instead of the original bank dataset. And from model_tree_balanced\$bestTune attribute, we use this tuning parameter to build your final decision tree model and then evaluate its performance on a separate test dataset
+
+```{r}
+# Build final decision tree model using the best tuning parameter
+final_model_tree_balanced <- rpart(y ~ ., data = training, method = "class", 
+                                   control = rpart.control(cp = model_tree_balanced$bestTune$cp))
+```
+
+### Model Prediction
+
+After training the model, we print the results and make predictions on the testing set as before. Finally, we evaluate the model using a confusion matrix as before.
+
+```{r}
+# Make predictions on the testing set
+predictions <- predict(final_model_tree_balanced, newdata = testing, type = "class")
+head(predictions)
+```
+
+### Model Evaluation
+
+When dealing with class imbalance, accuracy may not be the best metric to use for model evaluation as it can be biased towards the majority class. Here are some metrics that are commonly used when dealing with class imbalance:
+
+1.  Precision: measures the proportion of true positives (i.e., correctly predicted positive cases) among all predicted positive cases.
+
+2.  Recall or sensitivity: measures the proportion of true positives among all actual positive cases.
+
+3.  F1 score: a weighted harmonic mean of precision and recall that balances both metrics.
+
+4.  Specificity: measures the proportion of true negatives (i.e., correctly predicted negative cases) among all actual negative cases.
+
+It's important to choose the metric that is appropriate for the specific problem and application, and to consider multiple metrics in combination when evaluating a model.
+
+```{r}
+# Evaluate the model
+conf_matrix <- confusionMatrix(predictions, testing$y)
+
+# Print the confusion matrix and the overall accuracy
+print(conf_matrix)
+cat("Overall Accuracy:", round(conf_matrix$overall[1], 3), "\n")
+```
+
+```{r}
+# Calculate precision, recall, and F1 score
+precision <- conf_matrix$byClass[1]
+recall <- conf_matrix$byClass[2]
+f1_score <- conf_matrix$byClass[3]
+cat("Precision:", round(precision, 3), "\n")
+cat("Recall:", round(recall, 3), "\n")
+cat("F1 Score:", round(f1_score, 3), "\n")
+```
+
+## Summary on different Models of Decision tree algorithm
+
+**Model-1 Evaluation: On Unmodified dataset**
+
+*Precision: 0.96*
+
+*Recall: 0.507*
+
+*F1 Score: 0.936*
+
+**Model-2 Evaluation: On Oversampled dataset using SMOTE**
+
+*Precision: 0.949*
+
+*Recall: 0.556*
+
+*F1 Score: 0.914*
+
+Based on the evaluation metrics provided, both Model-1 and Model-2 have good Precision and F1 Score values, but they differ in their Recall values.
+
+It seems like the oversampling technique improved the recall while slightly reducing the precision and F1 score. This means that the model is able to correctly identify more positive cases (customers who will subscribe to the term deposit) but at the expense of a slightly increased number of false positives (customers who are predicted to subscribe but actually do not). Depending on the business case and cost-benefit analysis, a higher recall might be more desirable in certain situations, while in other situations a higher precision might be more important.
+
+Overall, the choice between Model-1 and Model-2 would depend on the specific requirements and priorities of the problem being solved. If correctly identifying positive cases is a higher priority, then Model-2 would be preferred. However, if the focus is on precision or identifying negative cases, then Model-1 would be a better choice.
+
+# Classification example using K-Nearest Neighbor
+
+Here is an example of how to implement a k-Nearest neighbor algorithm for classification model using the caret package in R.
+
+## Data Pre-processing
+
+It is very important to pre-process the data before building the model. In specific to KNN model, the data should be scaled and encoded properly to prevent distance measures from being dominated by one of the attributes.
+
+```{r}
+# Convert month to numerical values
+month_levels <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
+bank$month <- factor(bank$month, levels = month_levels)
+bank$month <- as.numeric(bank$month)
+```
+
+```{r}
+# Encode categorical variables using one-hot encoding
+cat_vars <- c("job", "marital", "education", "default", "housing", "loan", "contact", "poutcome")
+bank_ohe <- model.matrix(~.+0, data = bank[, cat_vars])
+bank_num <- bank[, !(names(bank) %in% cat_vars)]
+bank_encoded <- cbind(bank_ohe, bank_num)
+```
+
+```{r}
+# Scale predictor variables
+bank_scaled <- bank_encoded %>% 
+  select(-y) %>%
+  scale() %>%
+  bind_cols(y = bank$y)
+```
+
+## KNN - Model 1 (Using Unmodified dataset)
+
+### Splitting data into Training and Testing sets
+
+```{r}
+# Split the data into training and testing sets
+set.seed(123)
+train_index <- createDataPartition(bank_scaled$y, p = 0.7, list = FALSE)
+train <- bank_scaled[train_index, ]
+test <- bank_scaled[-train_index, ]
+```
+
+### Model Training
+
+Lets fit the model using training dataset for the range of k values to find the best k value to build a better model. Here, I have used a range of 'k' values from 28 to 30, as it takes a huge amount of time to run the model, because of large instances in the dataset. And I have already verified earlier that the best 'k' value for this dataset lies between 28 to 30.
+
+```{r}
+# Set up cross-validation
+ctrl <- trainControl(method = "cv", number = 10, classProbs = TRUE)
+
+# Tune kNN model for different values of k
+k_vals <- 28:30
+tune_grid <- expand.grid(k = k_vals)
+knn_model <- train(y ~ ., data = train, method = "knn", trControl = ctrl, 
+                   tuneGrid = tune_grid, preProcess = c("center", "scale"))
+```
+
+```{r }
+# Plot model accuracy vs different values of k
+plot(knn_model)
+```
+
+```{r}
+# Print the best tuning parameter cp that maximizes the model accuracy
+knn_model$bestTune$k
+```
+
+After finding the best k value using knn_model$bestTune$k attribute, we use this tuning parameter to build your final KNN model and then evaluate its performance on a separate test dataset. below code snippet shows to build the final KNN model using the best tuning parameter:
+
+```{r}
+# Create a knn model with best tune parameter
+final_knn_model <- train(y ~ ., data = train, method = "knn", trControl = ctrl, 
+                         tuneGrid = data.frame(k = knn_model$bestTune$k), preProc = c("center", "scale"))
+```
+
+### Model Prediction
+
+```{r}
+# Predict on the testing set
+predictions <- predict(final_knn_model, test)
+```
+
+### Model Evaluation
+
+Finally, we evaluate the model by calculating a confusion matrix using the table function. This shows us how many observations were correctly classified and misclassified by the model.
+
+```{r}
+# Evaluate the model
+conf_matrix <- confusionMatrix(predictions, test$y)
+
+# Print the confusion matrix and the overall accuracy
+print(conf_matrix)
+cat("Overall Accuracy:", round(conf_matrix$overall[1], 3), "\n")
+```
+
+```{r}
+# Calculate precision, recall, and F1 score
+precision <- conf_matrix$byClass[1]
+recall <- conf_matrix$byClass[2]
+f1_score <- conf_matrix$byClass[3]
+cat("Precision:", round(precision, 3), "\n")
+cat("Recall:", round(recall, 3), "\n")
+cat("F1 Score:", round(f1_score, 3), "\n")
+```
+
+## KNN - Model 2 (Using SMOTE)
+
+As our predictor variable is imbalanced, meaning that one class has significantly fewer observations than the other, then it can be challenging to train a classifier that performs well on both classes.
+
+Let's try to address this issue by balancing the data by oversampling the minority class using SMOTE technique.
+
+### Balance the target class by Oversampling
+
+```{r}
+# Load the necessary libraries
+library(ROSE)
+
+# Apply ROSE to balance the data
+bank_balanced <- ovun.sample(y ~ ., data = bank, method = "over", N = 48000)$data
+
+# Encode categorical variables using one-hot encoding
+cat_vars <- c("job", "marital", "education", "default", "housing", "loan", "contact", "poutcome")
+bank_ohe <- model.matrix(~.+0, data = bank_balanced[, cat_vars])
+bank_num <- bank_balanced[, !(names(bank_balanced) %in% cat_vars)]
+bank_encoded <- cbind(bank_ohe, bank_num)
+
+# Scale predictor variables
+bank_scaled_balanced <- bank_encoded %>% 
+  select(-y) %>%
+  scale() %>%
+  bind_cols(y = bank_balanced$y)
+```
+
+### Splitting data into Training and Testing sets
+
+```{r}
+# Split the data into training and testing sets
+set.seed(123)
+train_index <- createDataPartition(bank_scaled_balanced$y, p = 0.7, list = FALSE)
+train <- bank_scaled_balanced[train_index, ]
+test <- bank_scaled_balanced[-train_index, ]
+```
+
+### Model Training
+
+```{r}
+# Set up cross-validation
+ctrl <- trainControl(method = "cv", number = 10, classProbs = TRUE)
+
+# Tune kNN model for different values of k
+k_vals <- 28:30
+tune_grid <- expand.grid(k = k_vals)
+knn_model_balanced <- train(y ~ ., data = train, method = "knn", trControl = ctrl, 
+                   tuneGrid = tune_grid, preProcess = c("center", "scale"))
+```
+
+```{r }
+# Plot model accuracy vs different values of k
+plot(knn_model_balanced)
+```
+
+```{r}
+# Print the best tuning parameter cp that maximizes the model accuracy
+knn_model_balanced$bestTune$k
+```
+
+```{r}
+# Create a knn model with best tune parameter
+final_knn_model_balanced <- train(y ~ ., data = train, method = "knn", trControl = ctrl, 
+                         tuneGrid = data.frame(k = knn_model_balanced$bestTune$k), 
+                         preProc = c("center", "scale"))
+```
+
+### Model Prediction
+
+```{r}
+# Predict on the testing set
+predictions <- predict(final_knn_model_balanced, test)
+levels(predictions)
+levels(test$y)
+```
+
+### Model Evaluation
+
+```{r}
+# Evaluate the model
+conf_matrix <- confusionMatrix(predictions, test$y)
+
+# Print the confusion matrix and the overall accuracy
+print(conf_matrix)
+cat("Overall Accuracy:", round(conf_matrix$overall[1], 3), "\n")
+```
+
+```{r}
+# Calculate precision, recall, and F1 score
+precision <- conf_matrix$byClass[1]
+recall <- conf_matrix$byClass[2]
+f1_score <- conf_matrix$byClass[3]
+cat("Precision:", round(precision, 3), "\n")
+cat("Recall:", round(recall, 3), "\n")
+cat("F1 Score:", round(f1_score, 3), "\n")
+```
+
+## Summary on different Models of kNN algorithm
+
+**Model-1 Evaluation: On Unmodified dataset**
+
+*Precision: 0.985*
+
+*Recall: 0.247*
+
+*F1 Score: 0.908*
+
+**Model-2 Evaluation: On Oversampled dataset using SMOTE**
+
+*Precision: 0.972*
+
+*Recall: 0.326*
+
+*F1 Score: 0.877*
+
+Based on the evaluation metrics provided, It looks like Model-1 has a higher precision and F1 score, but a lower recall than Model-2. This suggests that Model-1 is better at correctly identifying true positives (higher precision), but may miss some positive cases (lower recall). Model-2, on the other hand, has a lower precision but higher recall, meaning that it may identify more positive cases overall but may also have more false positives.
+
+Ultimately, the choice between the two models would depend on the specific needs and goals of the analysis.
+
+# Conclusion
+
+It seems like the kNN algorithm has higher precision but lower recall compared to the decision tree algorithm, while the decision tree algorithm has higher recall but lower precision. The F1 scores are comparable, but slightly better for the decision tree algorithm.
+
+However, it is important to note that the choice of algorithm ultimately depends on the specific problem and dataset being analyzed. It may be helpful to consider additional factors such as computational efficiency, interpretability of the model, and ease of implementation when deciding which algorithm to use.

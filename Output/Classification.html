@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ajith Vernekar" />
+
+<meta name="date" content="2023-03-31" />
+
+<title>Classification Algorithms</title>
+
+<script src="Classification_files/header-attrs-2.17/header-attrs.js"></script>
+<script src="Classification_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="Classification_files/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="Classification_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="Classification_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="Classification_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="Classification_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="Classification_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="Classification_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="Classification_files/navigation-1.1/tabsets.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Classification Algorithms</h1>
+<h4 class="author">Ajith Vernekar</h4>
+<h4 class="date">2023-03-31</h4>
+
+</div>
+
+
+<p>This project demonstrates on the classification model using Decision
+Trees and kNN in R. I have used bank dataset. This dataset contains
+information about a bank’s marketing campaigns, and is commonly used for
+binary classification tasks to predict whether a customer will subscribe
+to a term deposit.</p>
+<div id="data" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Data</h1>
+<p>The Bank Marketing dataset is available from the UCI Machine Learning
+Repository, which is a public repository for machine learning datasets.
+You can access the dataset and its information from the following
+link:</p>
+<p><a href="https://archive.ics.uci.edu/ml/datasets/Bank+Marketing"
+class="uri">https://archive.ics.uci.edu/ml/datasets/Bank+Marketing</a></p>
+<p>The dataset contains information about a bank’s telemarketing
+campaigns and whether or not the client subscribed to a term deposit.
+There are a total of 16 input variables and one binary output variable
+(0/1) indicating whether or not the client subscribed to the term
+deposit. The dataset has 45,211 records, and is commonly used for binary
+classification tasks in machine learning.</p>
+<p><strong>Attribute information:</strong></p>
+<p><em>Input variables:</em></p>
+<ol style="list-style-type: decimal">
+<li><p>age (numeric)</p></li>
+<li><p>job : type of job (categorical:
+“admin.”,“unknown”,“unemployed”,“management”,“housemaid”,“entrepreneur”,“student”,
+“blue-collar”,“self-employed”,“retired”,“technician”,“services”)</p></li>
+<li><p>marital : marital status (categorical:
+“married”,“divorced”,“single”; note: “divorced” means divorced or
+widowed)</p></li>
+<li><p>education (categorical:
+“unknown”,“secondary”,“primary”,“tertiary”)</p></li>
+<li><p>default: has credit in default? (binary: “yes”,“no”)</p></li>
+<li><p>balance: average yearly balance, in euros (numeric)</p></li>
+<li><p>housing: has housing loan? (binary: “yes”,“no”)</p></li>
+<li><p>loan: has personal loan? (binary: “yes”,“no”) # related with the
+last contact of the current campaign:</p></li>
+<li><p>contact: contact communication type (categorical:
+“unknown”,“telephone”,“cellular”)</p></li>
+<li><p>day: last contact day of the month (numeric)</p></li>
+<li><p>month: last contact month of year (categorical: “jan”, “feb”,
+“mar”, …, “nov”, “dec”)</p></li>
+<li><p>duration: last contact duration, in seconds (numeric) # other
+attributes:</p></li>
+<li><p>campaign: number of contacts performed during this campaign and
+for this client (numeric, includes last contact)</p></li>
+<li><p>pdays: number of days that passed by after the client was last
+contacted from a previous campaign (numeric, -1 means client was not
+previously contacted)</p></li>
+<li><p>previous: number of contacts performed before this campaign and
+for this client (numeric)</p></li>
+<li><p>poutcome: outcome of the previous marketing campaign
+(categorical: “unknown”,“other”,“failure”,“success”)</p>
+<p><em>Output variable (desired target):</em></p></li>
+<li><p>y - has the client subscribed a term deposit? (binary:
+“yes”,“no”)</p></li>
+</ol>
+</div>
+<div id="exploratory-data-analysis" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Exploratory Data
+Analysis</h1>
+<p>Before applying machine learning algorithms to classify the data, it
+is important to perform some initial exploratory data analysis (EDA) to
+get a sense of the data and identify any potential issues or patterns.
+Here are some steps you could take for analyzing the Bank Marketing
+dataset:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading Bank Marketing dataset</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>bank_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../Data/Classification/bank-full.csv&quot;</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a copy of the dataframefor EDA</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>bank <span class="ot">&lt;-</span> bank_df</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># view data set</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(bank, <span class="at">n=</span><span class="dv">5</span>)</span></code></pre></div>
+<pre><code>##   age          job marital education default balance housing loan contact day
+## 1  58   management married  tertiary      no    2143     yes   no unknown   5
+## 2  44   technician  single secondary      no      29     yes   no unknown   5
+## 3  33 entrepreneur married secondary      no       2     yes  yes unknown   5
+## 4  47  blue-collar married   unknown      no    1506     yes   no unknown   5
+## 5  33      unknown  single   unknown      no       1      no   no unknown   5
+##   month duration campaign pdays previous poutcome  y
+## 1   may      261        1    -1        0  unknown no
+## 2   may      151        1    -1        0  unknown no
+## 3   may       76        1    -1        0  unknown no
+## 4   may       92        1    -1        0  unknown no
+## 5   may      198        1    -1        0  unknown no</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dimension of the dataset</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(bank)</span></code></pre></div>
+<pre><code>## [1] 45211    17</code></pre>
+<p>The above output infers that there are a total of 17 input variables
+and one binary output variable (0/1) indicating whether or not the
+client subscribed to the term deposit and The dataset has 45,211
+records</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecting the datatypes of the variables</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(bank)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    45211 obs. of  17 variables:
+##  $ age      : int  58 44 33 47 33 35 28 42 58 43 ...
+##  $ job      : chr  &quot;management&quot; &quot;technician&quot; &quot;entrepreneur&quot; &quot;blue-collar&quot; ...
+##  $ marital  : chr  &quot;married&quot; &quot;single&quot; &quot;married&quot; &quot;married&quot; ...
+##  $ education: chr  &quot;tertiary&quot; &quot;secondary&quot; &quot;secondary&quot; &quot;unknown&quot; ...
+##  $ default  : chr  &quot;no&quot; &quot;no&quot; &quot;no&quot; &quot;no&quot; ...
+##  $ balance  : int  2143 29 2 1506 1 231 447 2 121 593 ...
+##  $ housing  : chr  &quot;yes&quot; &quot;yes&quot; &quot;yes&quot; &quot;yes&quot; ...
+##  $ loan     : chr  &quot;no&quot; &quot;no&quot; &quot;yes&quot; &quot;no&quot; ...
+##  $ contact  : chr  &quot;unknown&quot; &quot;unknown&quot; &quot;unknown&quot; &quot;unknown&quot; ...
+##  $ day      : int  5 5 5 5 5 5 5 5 5 5 ...
+##  $ month    : chr  &quot;may&quot; &quot;may&quot; &quot;may&quot; &quot;may&quot; ...
+##  $ duration : int  261 151 76 92 198 139 217 380 50 55 ...
+##  $ campaign : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ pdays    : int  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 ...
+##  $ previous : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ poutcome : chr  &quot;unknown&quot; &quot;unknown&quot; &quot;unknown&quot; &quot;unknown&quot; ...
+##  $ y        : chr  &quot;no&quot; &quot;no&quot; &quot;no&quot; &quot;no&quot; ...</code></pre>
+<p>In R, converting categorical variables to factors is very important
+because it enables R to recognize the variable as a categorical
+variable, rather than a numerical variable. This is important because
+categorical variables have unique properties that require special
+treatment when performing statistical analyses or machine learning
+algorithms.</p>
+<p>The below chunk is used to find the unique values of the categorical
+variables in a dataframe. We used sapply to identify the categorical
+variables in the dataframe, by checking if each column is a factor. We
+then used lapply to apply the unique function to only the categorical
+variables (i.e., the columns identified as factors by sapply)</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert categorical variables to factors</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>job <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>job)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>marital <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>marital)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>education <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>education)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>default <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>default)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>housing <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>housing)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>loan <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>loan)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>contact <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>contact)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>month)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>poutcome <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>poutcome)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(bank<span class="sc">$</span>y)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the categorical variables</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>cat_vars <span class="ot">&lt;-</span> <span class="fu">sapply</span>(bank, is.factor)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the unique values of each categorical variable</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>unique_vals <span class="ot">&lt;-</span> <span class="fu">lapply</span>(bank[, cat_vars], unique)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(unique_vals)</span></code></pre></div>
+<pre><code>## $job
+##  [1] management    technician    entrepreneur  blue-collar   unknown      
+##  [6] retired       admin.        services      self-employed unemployed   
+## [11] housemaid     student      
+## 12 Levels: admin. blue-collar entrepreneur housemaid management ... unknown
+## 
+## $marital
+## [1] married  single   divorced
+## Levels: divorced married single
+## 
+## $education
+## [1] tertiary  secondary unknown   primary  
+## Levels: primary secondary tertiary unknown
+## 
+## $default
+## [1] no  yes
+## Levels: no yes
+## 
+## $housing
+## [1] yes no 
+## Levels: no yes
+## 
+## $loan
+## [1] no  yes
+## Levels: no yes
+## 
+## $contact
+## [1] unknown   cellular  telephone
+## Levels: cellular telephone unknown
+## 
+## $month
+##  [1] may jun jul aug oct nov dec jan feb mar apr sep
+## Levels: apr aug dec feb jan jul jun mar may nov oct sep
+## 
+## $poutcome
+## [1] unknown failure other   success
+## Levels: failure other success unknown
+## 
+## $y
+## [1] no  yes
+## Levels: no yes</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a list of categorical variables</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>cat_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;job&quot;</span>, <span class="st">&quot;marital&quot;</span>, <span class="st">&quot;education&quot;</span>, <span class="st">&quot;default&quot;</span>, <span class="st">&quot;housing&quot;</span>, <span class="st">&quot;loan&quot;</span>, <span class="st">&quot;contact&quot;</span>, <span class="st">&quot;month&quot;</span>, <span class="st">&quot;poutcome&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a function to plot bar charts for categorical variables</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>plot_cat_var <span class="ot">&lt;-</span> <span class="cf">function</span>(data, var_name) {</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate frequency table</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  freq_table <span class="ot">&lt;-</span> <span class="fu">table</span>(data[, var_name], data<span class="sc">$</span>y)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  freq_table <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(freq_table)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(freq_table) <span class="ot">&lt;-</span> <span class="fu">c</span>(var_name, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;freq&quot;</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate percentage</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  freq_table<span class="sc">$</span>percentage <span class="ot">&lt;-</span> (freq_table<span class="sc">$</span>freq<span class="sc">/</span><span class="fu">sum</span>(freq_table<span class="sc">$</span>freq))<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Plot bar chart</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(freq_table, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">factor</span>(<span class="fu">get</span>(var_name)), <span class="sc">-</span>freq), <span class="at">y =</span> percentage, <span class="at">fill =</span> y)) <span class="sc">+</span> </span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="at">position =</span> <span class="st">&quot;dodge&quot;</span>) <span class="sc">+</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#FF9999&quot;</span>, <span class="st">&quot;#66CC66&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Distribution of&quot;</span>, var_name), <span class="at">x =</span> var_name, <span class="at">y =</span> <span class="st">&quot;Percentage&quot;</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot bar charts for all categorical variables</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cat_var</span>(bank, <span class="st">&quot;job&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/categorical_var_frequency-1.png" width="672" /></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cat_var</span>(bank, <span class="st">&quot;marital&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/categorical_var_frequency-2.png" width="672" /></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cat_var</span>(bank, <span class="st">&quot;education&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/categorical_var_frequency-3.png" width="672" /></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cat_var</span>(bank, <span class="st">&quot;default&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/categorical_var_frequency-4.png" width="672" /></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cat_var</span>(bank, <span class="st">&quot;housing&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/categorical_var_frequency-5.png" width="672" /></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cat_var</span>(bank, <span class="st">&quot;loan&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/categorical_var_frequency-6.png" width="672" /></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cat_var</span>(bank, <span class="st">&quot;contact&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/categorical_var_frequency-7.png" width="672" /></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cat_var</span>(bank, <span class="st">&quot;month&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/categorical_var_frequency-8.png" width="672" /></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_cat_var</span>(bank, <span class="st">&quot;poutcome&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/categorical_var_frequency-9.png" width="672" /></p>
+<p>From the above distribution graphs, we can initially say that the
+customers with no previous loans or housing loans are more probable to
+subscribe for term deposits.</p>
+<p>Here we are the few other observations made.</p>
+<p><strong>Job</strong>: Maximum number of clients work in Blue-color
+job.</p>
+<p><strong>Maritial</strong>: Maximum number of clients are married.
+Minimum number of clients are divorced.</p>
+<p><strong>Education</strong>: Maximum number of clients have completed
+Secondary education.</p>
+<p><strong>Default</strong>: Almost all clients in the dataset have no
+credit default.</p>
+<p><strong>Loan</strong>: Maximum number of clients do not have a
+personal loan.</p>
+<p><strong>Month</strong>: Most number of contacts were carried out in
+the month of May. Lest number of contacts were carried out in the month
+of December.</p>
+<p><strong>Poutcome</strong>: For maximum number of clients outcome of
+previous marketing campaign is unknown. Number of failures are higher
+when compared to success in the results of previous marketing
+campaign.</p>
+<p>Similarly, to check the distribution of numerical variables is an
+important part of the EDA. One can use summary statistics (e.g., mean,
+median, standard deviation) and visualizations (e.g., histograms, box
+plots) to check the distribution of the numerical variables in the
+dataset.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display summary statistics for numeric variables</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bank[,<span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;balance&quot;</span>, <span class="st">&quot;day&quot;</span>, <span class="st">&quot;duration&quot;</span>, <span class="st">&quot;campaign&quot;</span>, <span class="st">&quot;pdays&quot;</span>, <span class="st">&quot;previous&quot;</span>)])</span></code></pre></div>
+<pre><code>##       age           balance            day           duration     
+##  Min.   :18.00   Min.   : -8019   Min.   : 1.00   Min.   :   0.0  
+##  1st Qu.:33.00   1st Qu.:    72   1st Qu.: 8.00   1st Qu.: 103.0  
+##  Median :39.00   Median :   448   Median :16.00   Median : 180.0  
+##  Mean   :40.94   Mean   :  1362   Mean   :15.81   Mean   : 258.2  
+##  3rd Qu.:48.00   3rd Qu.:  1428   3rd Qu.:21.00   3rd Qu.: 319.0  
+##  Max.   :95.00   Max.   :102127   Max.   :31.00   Max.   :4918.0  
+##     campaign          pdays          previous       
+##  Min.   : 1.000   Min.   : -1.0   Min.   :  0.0000  
+##  1st Qu.: 1.000   1st Qu.: -1.0   1st Qu.:  0.0000  
+##  Median : 2.000   Median : -1.0   Median :  0.0000  
+##  Mean   : 2.764   Mean   : 40.2   Mean   :  0.5803  
+##  3rd Qu.: 3.000   3rd Qu.: -1.0   3rd Qu.:  0.0000  
+##  Max.   :63.000   Max.   :871.0   Max.   :275.0000</code></pre>
+<p>From the above statistical summary, we can infer that, the minimum
+age is 18 years, and 50% of the customers are below 39 years of age and
+the maximum age is 95 years. Lets see the distribution of it using box
+plot.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for the outliers in the numerical variables in the dataset</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a box plot of age with outliers</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> bank, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> age)) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="fu">aes</span>(<span class="at">color =</span> <span class="st">&quot;age&quot;</span>), <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Value&quot;</span>) <span class="sc">+</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Box plot of age with outliers&quot;</span>) <span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="Classification_files/figure-html/boxplot_age-1.png" width="672" /></p>
+<p>To show outliers in the plot, we first created a box plot of the
+“age” column using geom_boxplot and set outlier.shape = NA to hide the
+outlier points. We then added the outlier points to the plot using
+geom_jitter, with color = “age” to differentiate them from the “balance”
+outliers. We repeated this process for the “balance” column.</p>
+<p>To add a legend to the plot, we used scale_color_manual to set the
+colors of the two categories (“age” and “balance”), and added a title
+and axis labels using labs and ggtitle. Finally, we used theme_bw to set
+a clean, black-and-white theme for the plot.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualizing the distribution of the numerical variables in the dataset</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the distribution of age</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bank, <span class="fu">aes</span>(<span class="at">x =</span> age)) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Distribution of Age&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Age&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Count&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/distribution_age-1.png" width="672" /></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a box plot of balance with outliers</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> bank, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> balance)) <span class="sc">+</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="fu">aes</span>(<span class="at">color =</span> <span class="st">&quot;balance&quot;</span>), <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Value&quot;</span>) <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Box plot of balance with outliers&quot;</span>) <span class="sc">+</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="Classification_files/figure-html/boxplot_balance-1.png" width="672" /></p>
+<p>The below chunk of code is used to show the distribution of balance
+in bins.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create bins for different balance levels</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>bins <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="dv">0</span>, <span class="dv">200</span>, <span class="dv">1300</span>, <span class="cn">Inf</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Negative balance&quot;</span>, <span class="st">&quot;Low balance&quot;</span>, <span class="st">&quot;Middle balance&quot;</span>, <span class="st">&quot;High balance&quot;</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Group the balance values into the bins and add labels</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>bank_group <span class="ot">&lt;-</span> bank</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>bank_group<span class="sc">$</span>balance_group <span class="ot">&lt;-</span> <span class="fu">cut</span>(bank<span class="sc">$</span>balance, <span class="at">breaks =</span> bins, <span class="at">labels =</span> labels)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a bar graph of balance by balance_group</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bank_group, <span class="fu">aes</span>(<span class="at">x =</span> balance_group)) <span class="sc">+</span> </span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span> </span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Distribution of Balance&quot;</span>) <span class="sc">+</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Balance Group&quot;</span>) <span class="sc">+</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Count&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/distribution_balance-1.png" width="672" /></p>
+<p>From the above summary statistics of balance data, its distribution
+of bins and box plot, we can infer that the balance variable has
+outliers. The negative balance here is assumed to be allowed for term
+deposits and hence not removed. More than 7000 customers hold negative
+balance and more than 12000 customers hold high balance greater than
+1500 euros, and rest hold average balance between 500 t0 1500 euros.</p>
+<p>Lets see the distribution of all other numeric variables.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># select numeric columns</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>bank_numeric <span class="ot">&lt;-</span> bank <span class="sc">%&gt;%</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select_if</span>(is.numeric)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># gather data into long format for plotting</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>bank_gathered <span class="ot">&lt;-</span> bank_numeric <span class="sc">%&gt;%</span> </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>()</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the distribution of numeric variables</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bank_gathered, <span class="fu">aes</span>(<span class="at">x=</span>value)) <span class="sc">+</span> </span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>key, <span class="at">scales=</span><span class="st">&quot;free&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for missing values</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(bank))</span></code></pre></div>
+<pre><code>## [1] 0</code></pre>
+<p>Fortunately, there are no missing values. If there were missing
+values we will have to fill them with the median, mean or mode. I tend
+to use the median but in this scenario there is no need to fill any
+missing values. This will definitely make our job easier!</p>
+<p>The distribution of the target variable (often called the response
+variable or dependent variable in statistics) provides insight into the
+balance or imbalance of the classes in the dataset. In classification
+problems, the target variable is the variable that we want to predict
+based on the other features in the dataset.</p>
+<p>In the case of the Bank Marketing dataset, the target variable is y,
+which indicates whether the client subscribed to a term deposit or not.
+A below chunk of code of bar chart is used to visualize the distribution
+of this variable</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for class imbalance</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(bank, <span class="fu">aes</span>(<span class="at">x =</span> y, <span class="at">fill =</span> y)) <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Distribution of Target Variable&quot;</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Target Variable&quot;</span>) <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Count&quot;</span>)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/target_class_imbalance-1.png" width="672" /></p>
+<p>If the classes are well-balanced, there should be roughly an equal
+number of observations in each class. In the Bank Marketing dataset, we
+can see that the “no” class (indicating that the client did not
+subscribe to a term deposit) is much more frequent than the “yes” class
+(indicating that the client did subscribe). This is evident in the bar
+chart of the target variable.</p>
+<p>Understanding the distribution of the target variable can help guide
+the development of machine learning models. In particular, it can help
+determine the appropriate evaluation metrics to use (e.g. accuracy,
+precision, recall, F1-score) and the techniques that can be used to
+handle class imbalance (e.g. resampling methods, cost-sensitive
+learning, ensemble methods).</p>
+</div>
+<div id="classification-example-using-decision-tree"
+class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Classification example
+using Decision Tree</h1>
+<p>Here is an example of how to implement a decision tree algorithm for
+classification using the caret package in R.</p>
+<div id="decision-tree---model-1-using-unmodified-dataset"
+class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Decision Tree - Model
+1 (Using Unmodified dataset)</h2>
+<div id="splitting-data-into-training-and-testing-sets"
+class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Splitting data into
+Training and Testing sets</h3>
+<p>In this example, we first load the caret package and the Bank
+Marketing dataset. We then convert the categorical variables to factors
+using the factor function.</p>
+<p>Next, we split the data into training and testing sets using the
+createDataPartition function from caret. We set the seed to ensure
+reproducibility.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split the data into training and testing sets</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>trainIndex <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(bank<span class="sc">$</span>y, <span class="at">p =</span> <span class="fl">0.7</span>, <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>training <span class="ot">&lt;-</span> bank[trainIndex, ]</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>testing <span class="ot">&lt;-</span> bank[<span class="sc">-</span>trainIndex, ]</span></code></pre></div>
+</div>
+<div id="model-training" class="section level3" number="3.1.2">
+<h3><span class="header-section-number">3.1.2</span> Model Training</h3>
+<p>Next, we define the training control using the trainControl function
+from the caret package. We specify that we want to use 10-fold
+cross-validation (method = “cv”) and that we want to optimize the area
+under the receiver operating characteristic curve (metric = “ROC”). We
+also specify the twoClassSummary function as the summary function to
+use, which calculates the sensitivity, specificity, and area under the
+curve.</p>
+<p>We then define the decision tree model using the train function from
+the caret package. We specify the formula y ~ . to indicate that we want
+to predict the target variable y using all of the other variables in the
+dataset. We also specify the method as “rpart” to indicate that we want
+to use a decision tree algorithm. Finally, we set the trControl
+parameter to the training control we defined earlier and set the
+tuneLength parameter to 10 to control the complexity of the tree.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the training control</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>ctrl <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;cv&quot;</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">number =</span> <span class="dv">10</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">summaryFunction =</span> twoClassSummary,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">classProbs =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">verboseIter =</span> <span class="cn">TRUE</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the decision tree model using caret</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>model_tree <span class="ot">&lt;-</span> <span class="fu">train</span>(</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> .,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> training,</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;rpart&quot;</span>,</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">trControl =</span> ctrl,</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuneLength =</span> <span class="dv">10</span>,</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">&quot;ROC&quot;</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## + Fold01: cp=0.00162 
+## - Fold01: cp=0.00162 
+## + Fold02: cp=0.00162 
+## - Fold02: cp=0.00162 
+## + Fold03: cp=0.00162 
+## - Fold03: cp=0.00162 
+## + Fold04: cp=0.00162 
+## - Fold04: cp=0.00162 
+## + Fold05: cp=0.00162 
+## - Fold05: cp=0.00162 
+## + Fold06: cp=0.00162 
+## - Fold06: cp=0.00162 
+## + Fold07: cp=0.00162 
+## - Fold07: cp=0.00162 
+## + Fold08: cp=0.00162 
+## - Fold08: cp=0.00162 
+## + Fold09: cp=0.00162 
+## - Fold09: cp=0.00162 
+## + Fold10: cp=0.00162 
+## - Fold10: cp=0.00162 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting cp = 0.00162 on full training set</code></pre>
+<p>After training the model, we plot the decision tree using the plot
+function. This produces a graphical representation of the tree that can
+help us interpret the model.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot model accuracy vs different values of cp (complexity parameter)</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model_tree)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/model_tree-1.png" width="672" /></p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the best tuning parameter cp that maximizes the model accuracy</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>model_tree<span class="sc">$</span>bestTune</span></code></pre></div>
+<pre><code>##            cp
+## 1 0.001620308</code></pre>
+<p>After finding the model_tree$bestTune attribute, we use this tuning
+parameter to build your final decision tree model and then evaluate its
+performance on a separate test dataset. below code snippet shows to
+build the final decision tree model using the best tuning parameter:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build final decision tree model using the best tuning parameter</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>final_model_tree <span class="ot">&lt;-</span> <span class="fu">rpart</span>(y <span class="sc">~</span> ., <span class="at">data =</span> training, <span class="at">method =</span> <span class="st">&quot;class&quot;</span>, </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">control =</span> <span class="fu">rpart.control</span>(<span class="at">cp =</span> model_tree<span class="sc">$</span>bestTune<span class="sc">$</span>cp))</span></code></pre></div>
+<p>After training the model, we plot the decision tree using the
+rpart.plot function. This produces a graphical representation of the
+tree that can help us interpret the model.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the final tree model</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(final_model_tree)</span></code></pre></div>
+<pre><code>## Warning: labs do not fit even at cex 0.15, there may be some overplotting</code></pre>
+<p><img src="Classification_files/figure-html/model_tree_finalModel-1.png" width="672" /></p>
+</div>
+<div id="model-prediction" class="section level3" number="3.1.3">
+<h3><span class="header-section-number">3.1.3</span> Model
+Prediction</h3>
+<p>We then make predictions on the testing set using the predict
+function. We specify type = “class” to indicate that we want to predict
+the class labels rather than the probabilities.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions on the testing set</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(final_model_tree, <span class="at">newdata =</span> testing, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span></code></pre></div>
+</div>
+<div id="model-evaluation" class="section level3" number="3.1.4">
+<h3><span class="header-section-number">3.1.4</span> Model
+Evaluation</h3>
+<p>Finally, we evaluate the model by calculating a confusion matrix
+using the table function. This shows us how many observations were
+correctly classified and misclassified by the model.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate the model</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>conf_matrix <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(predictions, testing<span class="sc">$</span>y)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the confusion matrix and the overall accuracy</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(conf_matrix)</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    no   yes
+##        no  11499   782
+##        yes   477   804
+##                                          
+##                Accuracy : 0.9072         
+##                  95% CI : (0.9022, 0.912)
+##     No Information Rate : 0.8831         
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
+##                                          
+##                   Kappa : 0.5096         
+##                                          
+##  Mcnemar&#39;s Test P-Value : &lt; 2.2e-16      
+##                                          
+##             Sensitivity : 0.9602         
+##             Specificity : 0.5069         
+##          Pos Pred Value : 0.9363         
+##          Neg Pred Value : 0.6276         
+##              Prevalence : 0.8831         
+##          Detection Rate : 0.8479         
+##    Detection Prevalence : 0.9055         
+##       Balanced Accuracy : 0.7336         
+##                                          
+##        &#39;Positive&#39; Class : no             
+## </code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Overall Accuracy:&quot;</span>, <span class="fu">round</span>(conf_matrix<span class="sc">$</span>overall[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Overall Accuracy: 0.907</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate precision, recall, and F1 score</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>precision <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">1</span>]</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>recall <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">2</span>]</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>f1_score <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">3</span>]</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Precision:&quot;</span>, <span class="fu">round</span>(precision, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Precision: 0.96</code></pre>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Recall:&quot;</span>, <span class="fu">round</span>(recall, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Recall: 0.507</code></pre>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;F1 Score:&quot;</span>, <span class="fu">round</span>(f1_score, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## F1 Score: 0.936</code></pre>
+</div>
+</div>
+<div id="decision-tree---model-2-using-smote" class="section level2"
+number="3.2">
+<h2><span class="header-section-number">3.2</span> Decision tree - Model
+2 (Using SMOTE)</h2>
+<div id="balance-the-target-class-by-oversampling"
+class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Balance the target
+class by Oversampling</h3>
+<p>As our predictor variable is imbalanced, meaning that one class has
+significantly fewer observations than the other, then it can be
+challenging to train a classifier that performs well on both
+classes.</p>
+<p>One approach to address this issue is to balance the data by
+oversampling the minority class or undersampling the majority class.
+There are several techniques available to achieve this, such as:</p>
+<ol style="list-style-type: decimal">
+<li><p>Random oversampling: randomly duplicate observations from the
+minority class to increase its size.</p></li>
+<li><p>SMOTE (Synthetic Minority Over-sampling Technique): creates
+synthetic observations in the minority class by interpolating between
+existing observations.</p></li>
+<li><p>Random undersampling: randomly remove observations from the
+majority class to decrease its size.</p></li>
+</ol>
+<p>In R, one can use the caret package to implement these techniques.
+Below chunk of code shows how to use the SMOTE algorithm to oversample
+the minority class:</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the necessary libraries</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ROSE)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply ROSE to balance the data</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>bank_balanced <span class="ot">&lt;-</span> <span class="fu">ovun.sample</span>(y <span class="sc">~</span> ., <span class="at">data =</span> bank, <span class="at">method =</span> <span class="st">&quot;over&quot;</span>, <span class="at">N =</span> <span class="dv">48000</span>)<span class="sc">$</span>data</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(bank_balanced)</span></code></pre></div>
+<pre><code>## [1] 48000    17</code></pre>
+</div>
+<div id="splitting-data-into-training-and-testing-sets-1"
+class="section level3" number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> Splitting data into
+Training and Testing sets</h3>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split the data into training and testing sets</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>trainIndex <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(bank_balanced<span class="sc">$</span>y, <span class="at">p =</span> <span class="fl">0.7</span>, <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>training <span class="ot">&lt;-</span> bank_balanced[trainIndex, ]</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>testing <span class="ot">&lt;-</span> bank_balanced[<span class="sc">-</span>trainIndex, ]</span></code></pre></div>
+</div>
+<div id="model-training-1" class="section level3" number="3.2.3">
+<h3><span class="header-section-number">3.2.3</span> Model Training</h3>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the training control</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>ctrl <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;cv&quot;</span>,</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">number =</span> <span class="dv">10</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">summaryFunction =</span> twoClassSummary,</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">classProbs =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">verboseIter =</span> <span class="cn">TRUE</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the decision tree model using caret</span></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>model_tree_balanced <span class="ot">&lt;-</span> <span class="fu">train</span>(</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> .,</span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> training,</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;rpart&quot;</span>,</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">trControl =</span> ctrl,</span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuneLength =</span> <span class="dv">10</span>,</span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">&quot;ROC&quot;</span></span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## + Fold01: cp=0.002299 
+## - Fold01: cp=0.002299 
+## + Fold02: cp=0.002299 
+## - Fold02: cp=0.002299 
+## + Fold03: cp=0.002299 
+## - Fold03: cp=0.002299 
+## + Fold04: cp=0.002299 
+## - Fold04: cp=0.002299 
+## + Fold05: cp=0.002299 
+## - Fold05: cp=0.002299 
+## + Fold06: cp=0.002299 
+## - Fold06: cp=0.002299 
+## + Fold07: cp=0.002299 
+## - Fold07: cp=0.002299 
+## + Fold08: cp=0.002299 
+## - Fold08: cp=0.002299 
+## + Fold09: cp=0.002299 
+## - Fold09: cp=0.002299 
+## + Fold10: cp=0.002299 
+## - Fold10: cp=0.002299 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting cp = 0.0023 on full training set</code></pre>
+<p>In the above chunk of code, we use the ovun.sample function from the
+ROSE package to oversample the minority class. We specify the formula y
+~ . to indicate that we want to balance the data based on the target
+variable y using all of the other variables in the dataset. We set the
+method parameter to “over” to indicate that we want to use random
+oversampling to balance the data, and we set the N parameter to 13900,
+which is the desired number of observations in the minority class after
+oversampling (this number is equal to the number of observations in the
+majority class in the original dataset).</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the final tree model</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model_tree_balanced)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/model_tree_balanced-1.png" width="672" /></p>
+<p>We then define the training control and the decision tree model as
+before, but this time we use the bank_balanced dataset instead of the
+original bank dataset. And from model_tree_balanced$bestTune attribute,
+we use this tuning parameter to build your final decision tree model and
+then evaluate its performance on a separate test dataset</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build final decision tree model using the best tuning parameter</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>final_model_tree_balanced <span class="ot">&lt;-</span> <span class="fu">rpart</span>(y <span class="sc">~</span> ., <span class="at">data =</span> training, <span class="at">method =</span> <span class="st">&quot;class&quot;</span>, </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">control =</span> <span class="fu">rpart.control</span>(<span class="at">cp =</span> model_tree_balanced<span class="sc">$</span>bestTune<span class="sc">$</span>cp))</span></code></pre></div>
+</div>
+<div id="model-prediction-1" class="section level3" number="3.2.4">
+<h3><span class="header-section-number">3.2.4</span> Model
+Prediction</h3>
+<p>After training the model, we print the results and make predictions
+on the testing set as before. Finally, we evaluate the model using a
+confusion matrix as before.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions on the testing set</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(final_model_tree_balanced, <span class="at">newdata =</span> testing, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(predictions)</span></code></pre></div>
+<pre><code>## 12 14 15 23 24 34 
+## no no no no no no 
+## Levels: no yes</code></pre>
+</div>
+<div id="model-evaluation-1" class="section level3" number="3.2.5">
+<h3><span class="header-section-number">3.2.5</span> Model
+Evaluation</h3>
+<p>When dealing with class imbalance, accuracy may not be the best
+metric to use for model evaluation as it can be biased towards the
+majority class. Here are some metrics that are commonly used when
+dealing with class imbalance:</p>
+<ol style="list-style-type: decimal">
+<li><p>Precision: measures the proportion of true positives (i.e.,
+correctly predicted positive cases) among all predicted positive
+cases.</p></li>
+<li><p>Recall or sensitivity: measures the proportion of true positives
+among all actual positive cases.</p></li>
+<li><p>F1 score: a weighted harmonic mean of precision and recall that
+balances both metrics.</p></li>
+<li><p>Specificity: measures the proportion of true negatives (i.e.,
+correctly predicted negative cases) among all actual negative
+cases.</p></li>
+</ol>
+<p>It’s important to choose the metric that is appropriate for the
+specific problem and application, and to consider multiple metrics in
+combination when evaluating a model.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate the model</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>conf_matrix <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(predictions, testing<span class="sc">$</span>y)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the confusion matrix and the overall accuracy</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(conf_matrix)</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    no   yes
+##        no  11287   945
+##        yes   689  1478
+##                                           
+##                Accuracy : 0.8865          
+##                  95% CI : (0.8812, 0.8917)
+##     No Information Rate : 0.8317          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.5768          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 2.821e-10       
+##                                           
+##             Sensitivity : 0.9425          
+##             Specificity : 0.6100          
+##          Pos Pred Value : 0.9227          
+##          Neg Pred Value : 0.6820          
+##              Prevalence : 0.8317          
+##          Detection Rate : 0.7839          
+##    Detection Prevalence : 0.8495          
+##       Balanced Accuracy : 0.7762          
+##                                           
+##        &#39;Positive&#39; Class : no              
+## </code></pre>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Overall Accuracy:&quot;</span>, <span class="fu">round</span>(conf_matrix<span class="sc">$</span>overall[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Overall Accuracy: 0.887</code></pre>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate precision, recall, and F1 score</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>precision <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">1</span>]</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>recall <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">2</span>]</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>f1_score <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">3</span>]</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Precision:&quot;</span>, <span class="fu">round</span>(precision, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Precision: 0.942</code></pre>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Recall:&quot;</span>, <span class="fu">round</span>(recall, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Recall: 0.61</code></pre>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;F1 Score:&quot;</span>, <span class="fu">round</span>(f1_score, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## F1 Score: 0.923</code></pre>
+</div>
+</div>
+<div id="summary-on-different-models-of-decision-tree-algorithm"
+class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Summary on different
+Models of Decision tree algorithm</h2>
+<p><strong>Model-1 Evaluation: On Unmodified dataset</strong></p>
+<p><em>Precision: 0.96</em></p>
+<p><em>Recall: 0.507</em></p>
+<p><em>F1 Score: 0.936</em></p>
+<p><strong>Model-2 Evaluation: On Oversampled dataset using
+SMOTE</strong></p>
+<p><em>Precision: 0.949</em></p>
+<p><em>Recall: 0.556</em></p>
+<p><em>F1 Score: 0.914</em></p>
+<p>Based on the evaluation metrics provided, both Model-1 and Model-2
+have good Precision and F1 Score values, but they differ in their Recall
+values.</p>
+<p>It seems like the oversampling technique improved the recall while
+slightly reducing the precision and F1 score. This means that the model
+is able to correctly identify more positive cases (customers who will
+subscribe to the term deposit) but at the expense of a slightly
+increased number of false positives (customers who are predicted to
+subscribe but actually do not). Depending on the business case and
+cost-benefit analysis, a higher recall might be more desirable in
+certain situations, while in other situations a higher precision might
+be more important.</p>
+<p>Overall, the choice between Model-1 and Model-2 would depend on the
+specific requirements and priorities of the problem being solved. If
+correctly identifying positive cases is a higher priority, then Model-2
+would be preferred. However, if the focus is on precision or identifying
+negative cases, then Model-1 would be a better choice.</p>
+</div>
+</div>
+<div id="classification-example-using-k-nearest-neighbor"
+class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Classification example
+using K-Nearest Neighbor</h1>
+<p>Here is an example of how to implement a k-Nearest neighbor algorithm
+for classification model using the caret package in R.</p>
+<div id="data-pre-processing" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Data
+Pre-processing</h2>
+<p>It is very important to pre-process the data before building the
+model. In specific to KNN model, the data should be scaled and encoded
+properly to prevent distance measures from being dominated by one of the
+attributes.</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert month to numerical values</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>month_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;jan&quot;</span>, <span class="st">&quot;feb&quot;</span>, <span class="st">&quot;mar&quot;</span>, <span class="st">&quot;apr&quot;</span>, <span class="st">&quot;may&quot;</span>, <span class="st">&quot;jun&quot;</span>, <span class="st">&quot;jul&quot;</span>, <span class="st">&quot;aug&quot;</span>, <span class="st">&quot;sep&quot;</span>, <span class="st">&quot;oct&quot;</span>, <span class="st">&quot;nov&quot;</span>, <span class="st">&quot;dec&quot;</span>)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">factor</span>(bank<span class="sc">$</span>month, <span class="at">levels =</span> month_levels)</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>bank<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(bank<span class="sc">$</span>month)</span></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Encode categorical variables using one-hot encoding</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>cat_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;job&quot;</span>, <span class="st">&quot;marital&quot;</span>, <span class="st">&quot;education&quot;</span>, <span class="st">&quot;default&quot;</span>, <span class="st">&quot;housing&quot;</span>, <span class="st">&quot;loan&quot;</span>, <span class="st">&quot;contact&quot;</span>, <span class="st">&quot;poutcome&quot;</span>)</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>bank_ohe <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>.<span class="sc">+</span><span class="dv">0</span>, <span class="at">data =</span> bank[, cat_vars])</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>bank_num <span class="ot">&lt;-</span> bank[, <span class="sc">!</span>(<span class="fu">names</span>(bank) <span class="sc">%in%</span> cat_vars)]</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>bank_encoded <span class="ot">&lt;-</span> <span class="fu">cbind</span>(bank_ohe, bank_num)</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Scale predictor variables</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>bank_scaled <span class="ot">&lt;-</span> bank_encoded <span class="sc">%&gt;%</span> </span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>y) <span class="sc">%&gt;%</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(<span class="at">y =</span> bank<span class="sc">$</span>y)</span></code></pre></div>
+</div>
+<div id="knn---model-1-using-unmodified-dataset" class="section level2"
+number="4.2">
+<h2><span class="header-section-number">4.2</span> KNN - Model 1 (Using
+Unmodified dataset)</h2>
+<div id="splitting-data-into-training-and-testing-sets-2"
+class="section level3" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Splitting data into
+Training and Testing sets</h3>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split the data into training and testing sets</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>train_index <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(bank_scaled<span class="sc">$</span>y, <span class="at">p =</span> <span class="fl">0.7</span>, <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> bank_scaled[train_index, ]</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> bank_scaled[<span class="sc">-</span>train_index, ]</span></code></pre></div>
+</div>
+<div id="model-training-2" class="section level3" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Model Training</h3>
+<p>Lets fit the model using training dataset for the range of k values
+to find the best k value to build a better model. Here, I have used a
+range of ‘k’ values from 28 to 30, as it takes a huge amount of time to
+run the model, because of large instances in the dataset. And I have
+already verified earlier that the best ‘k’ value for this dataset lies
+between 28 to 30.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up cross-validation</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>ctrl <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="at">number =</span> <span class="dv">10</span>, <span class="at">classProbs =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Tune kNN model for different values of k</span></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>k_vals <span class="ot">&lt;-</span> <span class="dv">28</span><span class="sc">:</span><span class="dv">30</span></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>tune_grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">k =</span> k_vals)</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>knn_model <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train, <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="at">trControl =</span> ctrl, </span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tuneGrid =</span> tune_grid, <span class="at">preProcess =</span> <span class="fu">c</span>(<span class="st">&quot;center&quot;</span>, <span class="st">&quot;scale&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot model accuracy vs different values of k</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(knn_model)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the best tuning parameter cp that maximizes the model accuracy</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>knn_model<span class="sc">$</span>bestTune<span class="sc">$</span>k</span></code></pre></div>
+<pre><code>## [1] 29</code></pre>
+<p>After finding the best k value using knn_model<span
+class="math inline">\(bestTune\)</span>k attribute, we use this tuning
+parameter to build your final KNN model and then evaluate its
+performance on a separate test dataset. below code snippet shows to
+build the final KNN model using the best tuning parameter:</p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a knn model with best tune parameter</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>final_knn_model <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train, <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="at">trControl =</span> ctrl, </span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">tuneGrid =</span> <span class="fu">data.frame</span>(<span class="at">k =</span> knn_model<span class="sc">$</span>bestTune<span class="sc">$</span>k), <span class="at">preProc =</span> <span class="fu">c</span>(<span class="st">&quot;center&quot;</span>, <span class="st">&quot;scale&quot;</span>))</span></code></pre></div>
+</div>
+<div id="model-prediction-2" class="section level3" number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> Model
+Prediction</h3>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict on the testing set</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(final_knn_model, test)</span></code></pre></div>
+</div>
+<div id="model-evaluation-2" class="section level3" number="4.2.4">
+<h3><span class="header-section-number">4.2.4</span> Model
+Evaluation</h3>
+<p>Finally, we evaluate the model by calculating a confusion matrix
+using the table function. This shows us how many observations were
+correctly classified and misclassified by the model.</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate the model</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>conf_matrix <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(predictions, test<span class="sc">$</span>y)</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the confusion matrix and the overall accuracy</span></span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(conf_matrix)</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    no   yes
+##        no  11796  1195
+##        yes   180   391
+##                                           
+##                Accuracy : 0.8986          
+##                  95% CI : (0.8934, 0.9036)
+##     No Information Rate : 0.8831          
+##     P-Value [Acc &gt; NIR] : 4.847e-09       
+##                                           
+##                   Kappa : 0.3205          
+##                                           
+##  Mcnemar&#39;s Test P-Value : &lt; 2.2e-16       
+##                                           
+##             Sensitivity : 0.9850          
+##             Specificity : 0.2465          
+##          Pos Pred Value : 0.9080          
+##          Neg Pred Value : 0.6848          
+##              Prevalence : 0.8831          
+##          Detection Rate : 0.8698          
+##    Detection Prevalence : 0.9579          
+##       Balanced Accuracy : 0.6158          
+##                                           
+##        &#39;Positive&#39; Class : no              
+## </code></pre>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Overall Accuracy:&quot;</span>, <span class="fu">round</span>(conf_matrix<span class="sc">$</span>overall[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Overall Accuracy: 0.899</code></pre>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate precision, recall, and F1 score</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>precision <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">1</span>]</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>recall <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">2</span>]</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>f1_score <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">3</span>]</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Precision:&quot;</span>, <span class="fu">round</span>(precision, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Precision: 0.985</code></pre>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Recall:&quot;</span>, <span class="fu">round</span>(recall, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Recall: 0.247</code></pre>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;F1 Score:&quot;</span>, <span class="fu">round</span>(f1_score, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## F1 Score: 0.908</code></pre>
+</div>
+</div>
+<div id="knn---model-2-using-smote" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> KNN - Model 2 (Using
+SMOTE)</h2>
+<p>As our predictor variable is imbalanced, meaning that one class has
+significantly fewer observations than the other, then it can be
+challenging to train a classifier that performs well on both
+classes.</p>
+<p>Let’s try to address this issue by balancing the data by oversampling
+the minority class using SMOTE technique.</p>
+<div id="balance-the-target-class-by-oversampling-1"
+class="section level3" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Balance the target
+class by Oversampling</h3>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the necessary libraries</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ROSE)</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply ROSE to balance the data</span></span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>bank_balanced <span class="ot">&lt;-</span> <span class="fu">ovun.sample</span>(y <span class="sc">~</span> ., <span class="at">data =</span> bank, <span class="at">method =</span> <span class="st">&quot;over&quot;</span>, <span class="at">N =</span> <span class="dv">48000</span>)<span class="sc">$</span>data</span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Encode categorical variables using one-hot encoding</span></span>
+<span id="cb87-8"><a href="#cb87-8" aria-hidden="true" tabindex="-1"></a>cat_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;job&quot;</span>, <span class="st">&quot;marital&quot;</span>, <span class="st">&quot;education&quot;</span>, <span class="st">&quot;default&quot;</span>, <span class="st">&quot;housing&quot;</span>, <span class="st">&quot;loan&quot;</span>, <span class="st">&quot;contact&quot;</span>, <span class="st">&quot;poutcome&quot;</span>)</span>
+<span id="cb87-9"><a href="#cb87-9" aria-hidden="true" tabindex="-1"></a>bank_ohe <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>.<span class="sc">+</span><span class="dv">0</span>, <span class="at">data =</span> bank_balanced[, cat_vars])</span>
+<span id="cb87-10"><a href="#cb87-10" aria-hidden="true" tabindex="-1"></a>bank_num <span class="ot">&lt;-</span> bank_balanced[, <span class="sc">!</span>(<span class="fu">names</span>(bank_balanced) <span class="sc">%in%</span> cat_vars)]</span>
+<span id="cb87-11"><a href="#cb87-11" aria-hidden="true" tabindex="-1"></a>bank_encoded <span class="ot">&lt;-</span> <span class="fu">cbind</span>(bank_ohe, bank_num)</span>
+<span id="cb87-12"><a href="#cb87-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb87-13"><a href="#cb87-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Scale predictor variables</span></span>
+<span id="cb87-14"><a href="#cb87-14" aria-hidden="true" tabindex="-1"></a>bank_scaled_balanced <span class="ot">&lt;-</span> bank_encoded <span class="sc">%&gt;%</span> </span>
+<span id="cb87-15"><a href="#cb87-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>y) <span class="sc">%&gt;%</span></span>
+<span id="cb87-16"><a href="#cb87-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb87-17"><a href="#cb87-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(<span class="at">y =</span> bank_balanced<span class="sc">$</span>y)</span></code></pre></div>
+</div>
+<div id="splitting-data-into-training-and-testing-sets-3"
+class="section level3" number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> Splitting data into
+Training and Testing sets</h3>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split the data into training and testing sets</span></span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>train_index <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(bank_scaled_balanced<span class="sc">$</span>y, <span class="at">p =</span> <span class="fl">0.7</span>, <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> bank_scaled_balanced[train_index, ]</span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> bank_scaled_balanced[<span class="sc">-</span>train_index, ]</span></code></pre></div>
+</div>
+<div id="model-training-3" class="section level3" number="4.3.3">
+<h3><span class="header-section-number">4.3.3</span> Model Training</h3>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up cross-validation</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>ctrl <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="at">number =</span> <span class="dv">10</span>, <span class="at">classProbs =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Tune kNN model for different values of k</span></span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>k_vals <span class="ot">&lt;-</span> <span class="dv">28</span><span class="sc">:</span><span class="dv">30</span></span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a>tune_grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">k =</span> k_vals)</span>
+<span id="cb89-7"><a href="#cb89-7" aria-hidden="true" tabindex="-1"></a>knn_model_balanced <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train, <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="at">trControl =</span> ctrl, </span>
+<span id="cb89-8"><a href="#cb89-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tuneGrid =</span> tune_grid, <span class="at">preProcess =</span> <span class="fu">c</span>(<span class="st">&quot;center&quot;</span>, <span class="st">&quot;scale&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot model accuracy vs different values of k</span></span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(knn_model_balanced)</span></code></pre></div>
+<p><img src="Classification_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the best tuning parameter cp that maximizes the model accuracy</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>knn_model_balanced<span class="sc">$</span>bestTune<span class="sc">$</span>k</span></code></pre></div>
+<pre><code>## [1] 29</code></pre>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a knn model with best tune parameter</span></span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>final_knn_model_balanced <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train, <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="at">trControl =</span> ctrl, </span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">tuneGrid =</span> <span class="fu">data.frame</span>(<span class="at">k =</span> knn_model_balanced<span class="sc">$</span>bestTune<span class="sc">$</span>k), </span>
+<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">preProc =</span> <span class="fu">c</span>(<span class="st">&quot;center&quot;</span>, <span class="st">&quot;scale&quot;</span>))</span></code></pre></div>
+</div>
+<div id="model-prediction-3" class="section level3" number="4.3.4">
+<h3><span class="header-section-number">4.3.4</span> Model
+Prediction</h3>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict on the testing set</span></span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(final_knn_model_balanced, test)</span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(predictions)</span></code></pre></div>
+<pre><code>## [1] &quot;no&quot;  &quot;yes&quot;</code></pre>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(test<span class="sc">$</span>y)</span></code></pre></div>
+<pre><code>## [1] &quot;no&quot;  &quot;yes&quot;</code></pre>
+</div>
+<div id="model-evaluation-3" class="section level3" number="4.3.5">
+<h3><span class="header-section-number">4.3.5</span> Model
+Evaluation</h3>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate the model</span></span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>conf_matrix <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(predictions, test<span class="sc">$</span>y)</span>
+<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb98-4"><a href="#cb98-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the confusion matrix and the overall accuracy</span></span>
+<span id="cb98-5"><a href="#cb98-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(conf_matrix)</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    no   yes
+##        no  11638  1567
+##        yes   338   856
+##                                           
+##                Accuracy : 0.8677          
+##                  95% CI : (0.8621, 0.8732)
+##     No Information Rate : 0.8317          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.4075          
+##                                           
+##  Mcnemar&#39;s Test P-Value : &lt; 2.2e-16       
+##                                           
+##             Sensitivity : 0.9718          
+##             Specificity : 0.3533          
+##          Pos Pred Value : 0.8813          
+##          Neg Pred Value : 0.7169          
+##              Prevalence : 0.8317          
+##          Detection Rate : 0.8083          
+##    Detection Prevalence : 0.9171          
+##       Balanced Accuracy : 0.6625          
+##                                           
+##        &#39;Positive&#39; Class : no              
+## </code></pre>
+<div class="sourceCode" id="cb100"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Overall Accuracy:&quot;</span>, <span class="fu">round</span>(conf_matrix<span class="sc">$</span>overall[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Overall Accuracy: 0.868</code></pre>
+<div class="sourceCode" id="cb102"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate precision, recall, and F1 score</span></span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>precision <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">1</span>]</span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>recall <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">2</span>]</span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>f1_score <span class="ot">&lt;-</span> conf_matrix<span class="sc">$</span>byClass[<span class="dv">3</span>]</span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Precision:&quot;</span>, <span class="fu">round</span>(precision, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Precision: 0.972</code></pre>
+<div class="sourceCode" id="cb104"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Recall:&quot;</span>, <span class="fu">round</span>(recall, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Recall: 0.353</code></pre>
+<div class="sourceCode" id="cb106"><pre
+class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;F1 Score:&quot;</span>, <span class="fu">round</span>(f1_score, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## F1 Score: 0.881</code></pre>
+</div>
+</div>
+<div id="summary-on-different-models-of-knn-algorithm"
+class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Summary on different
+Models of kNN algorithm</h2>
+<p><strong>Model-1 Evaluation: On Unmodified dataset</strong></p>
+<p><em>Precision: 0.985</em></p>
+<p><em>Recall: 0.247</em></p>
+<p><em>F1 Score: 0.908</em></p>
+<p><strong>Model-2 Evaluation: On Oversampled dataset using
+SMOTE</strong></p>
+<p><em>Precision: 0.972</em></p>
+<p><em>Recall: 0.326</em></p>
+<p><em>F1 Score: 0.877</em></p>
+<p>Based on the evaluation metrics provided, It looks like Model-1 has a
+higher precision and F1 score, but a lower recall than Model-2. This
+suggests that Model-1 is better at correctly identifying true positives
+(higher precision), but may miss some positive cases (lower recall).
+Model-2, on the other hand, has a lower precision but higher recall,
+meaning that it may identify more positive cases overall but may also
+have more false positives.</p>
+<p>Ultimately, the choice between the two models would depend on the
+specific needs and goals of the analysis.</p>
+</div>
+</div>
+<div id="conclusion" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Conclusion</h1>
+<p>It seems like the kNN algorithm has higher precision but lower recall
+compared to the decision tree algorithm, while the decision tree
+algorithm has higher recall but lower precision. The F1 scores are
+comparable, but slightly better for the decision tree algorithm.</p>
+<p>However, it is important to note that the choice of algorithm
+ultimately depends on the specific problem and dataset being analyzed.
+It may be helpful to consider additional factors such as computational
+efficiency, interpretability of the model, and ease of implementation
+when deciding which algorithm to use.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
