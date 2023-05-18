@@ -51,6 +51,8 @@ The repository is organized into several sections:
 
 5. Conclusion: The conclusion section provides a summary of the project, highlighting key findings and insights. It also suggests possible areas for future improvement or research.
 
+The detailed project report can be found in the output folder. It is available in HTML format, providing comprehensive analysis, insights, and conclusions derived from the classification models.
+
 ## Usage
 To run the code and reproduce the results, you need to have R installed on your machine along with the necessary libraries specified in the code. Make sure to set the working directory correctly and run the scripts in the provided order to ensure proper execution.
 
