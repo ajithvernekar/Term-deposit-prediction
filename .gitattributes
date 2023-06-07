@@ -1,2 +1,3 @@
+Output/* linguist-vendored
 *.html linguist-detectable=false
 *.Rmd linguist-language=R
