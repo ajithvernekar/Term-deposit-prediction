@@ -1,4 +1,4 @@
-Output/* linguist-vendored
 *.html linguist-detectable=false
+*.js linguist-detectable=false
 *.Rmd linguist-language=R
 *.Rproj linguist-language=R
